@@ -13,7 +13,7 @@ const Home = ({ navigation }: { navigation: any }) => {
             <Text>지금 내 근처에서 가게를 설정하고 음식을 받아보세요!</Text>
             <View style={homeWrapper.buttonView}>
                 <TouchableOpacity style={homeWrapper.button}>
-                    <Text style={homeWrapper.title} onPress={() => navigation.navigate('SignUp')}>포장하기</Text>
+                    <Text style={homeWrapper.title} onPress={() => navigation.navigate('SignUpAgree')}>포장하기</Text>
                 </TouchableOpacity>
                 <View style={homeWrapper.confirmView}>
                     <Text>이미 계정이 있나요?</Text>
