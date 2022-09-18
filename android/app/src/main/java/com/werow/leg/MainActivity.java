@@ -1,4 +1,4 @@
-package com.leg;
+package com.werow.leg;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
