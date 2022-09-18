@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { authphone } from "../../config/AxiosFunction";
+import Header from "../Header";
 
 type SignUpPhone = {
   navigation: any;
@@ -40,8 +41,7 @@ const SignUpPhone = ({ navigation, route }: SignUpPhone) => {
   // }
   return (
     <View style={PhoneWrapper.MainContainer}>
-      <Image source={require('../../assets/title.png')}
-        style={PhoneWrapper.headerTitle} />
+      <Header />
       <View style={PhoneWrapper.WarnContainer}>
         <Text style={PhoneWrapper.PhoneTitle}>
           휴대폰 번호를 입력해주세요.

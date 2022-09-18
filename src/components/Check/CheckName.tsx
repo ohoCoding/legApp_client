@@ -3,6 +3,7 @@ import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } fro
 import { changeuser, checkuser } from "../../config/AxiosFunction"
 import DeviceInfo from 'react-native-device-info';
 import { Device } from "../../models/deviceInfo";
+import Header from "../Header";
 
 type CheckName = {
   navigation?: any,
@@ -48,18 +49,22 @@ const CheckName = ({ navigation, route }: CheckName) => {
     const response = await checkuser(nickname, route.params?.phone);
     console.log(response.data);
 
-    if (response.data == true) {
-      const response = await changeuser(route.params?.phone, deviceInfo.deviceType, deviceInfo.deviceToken)
-      if (response.status == 200) {
-        console.log('로그인 성공');
-        navigation.navigate('Home')
-      } else {
-        console.log('로그인 실패');
-        navigation.navigate('Home')
-      }
-    } else {
+    if (response.data == false) {
       Alert.alert('닉네임 입력이 틀렸습니다. 문의해주세요')
       navigation.navigate('Home')
+    } else {
+
+      try {
+        const response = await changeuser(route.params?.phone, deviceInfo.deviceType, deviceInfo.deviceToken)
+        if (response.status === 200) {
+          console.log('로그인 성공', response.status);
+          navigation.navigate('Home')
+        }
+
+      } catch {
+        console.log('로그인 실패', response.status);
+        navigation.navigate('Home')
+      }
     }
   }
 
@@ -69,8 +74,7 @@ const CheckName = ({ navigation, route }: CheckName) => {
 
   return (
     <View style={PhoneWrapper.MainContainer}>
-      <Image source={require('../../assets/title.png')}
-        style={PhoneWrapper.headerTitle} />
+      <Header />
       <View style={PhoneWrapper.WarnContainer}>
         <Text style={PhoneWrapper.PhoneTitle}>
           닉네임 확인해주세요 :)
@@ -87,13 +91,13 @@ const CheckName = ({ navigation, route }: CheckName) => {
           onChangeText={value => InputNickName(value)}
           placeholder="닉네임을 입력해주세요.">
         </TextInput>
-        <TextInput
+        {/* <TextInput
           style={PhoneWrapper.authCode}
           // accessible={isCheck}
           keyboardType={"name-phone-pad"}
           value={route.params?.phone}
           placeholder="핸드폰을 입력해주세요.">
-        </TextInput>
+        </TextInput> */}
         <TouchableOpacity
           style={PhoneWrapper.ConfirmView}
           onPress={CheckUser}>

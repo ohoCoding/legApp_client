@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Alert, Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { authphone, existphone, login } from "../../config/AxiosFunction";
 import { Device } from "../../models/deviceInfo";
+import Header from "../Header";
 
 
 type SignUpVerify = {
@@ -102,8 +103,7 @@ const SignUpVerify = ({ navigation, route }: SignUpVerify) => {
   }
   return (
     <View style={PhoneWrapper.MainContainer}>
-      <Image source={require('../../assets/title.png')}
-        style={PhoneWrapper.headerTitle} />
+      <Header />
       <View style={PhoneWrapper.WarnContainer}>
         <Text style={PhoneWrapper.PhoneTitle}>
           인증번호를 입력해주세요.
@@ -157,12 +157,11 @@ const SignUpVerify = ({ navigation, route }: SignUpVerify) => {
         visible={modalVisible}
       >
         <View style={PhoneWrapper.ModalContainer}>
-          <Image source={require('../../assets/title.png')}
-            style={PhoneWrapper.headerTitle} />
+          <Header />
           <Text style={PhoneWrapper.PhoneTitle}>
             이미 등록된 계정입니다.
           </Text>
-          <Text style={PhoneWrapper.SubPhoneTitle}>선택해주세요</Text>
+          {/* <Text style={PhoneWrapper.SubPhoneTitle}>선택해주세요</Text> */}
 
           <TouchableOpacity
             style={PhoneWrapper.ConfirmView}

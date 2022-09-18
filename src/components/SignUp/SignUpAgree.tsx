@@ -2,6 +2,7 @@ import CheckBox from "@react-native-community/checkbox";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Header from "../Header";
 
 type SignUpAgree = {
   navigation: any;
@@ -29,8 +30,7 @@ const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
 
   return (
     <View style={AgreeWrapper.MainContainer}>
-      <Image source={require('../../assets/title.png')}
-        style={AgreeWrapper.headerTitle} />
+      <Header />
       <View style={AgreeWrapper.AgreeContainter}>
         <Text style={AgreeWrapper.AgreeTitle}>
           이용 약관에 동의해주세요.

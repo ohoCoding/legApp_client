@@ -3,6 +3,7 @@ import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } fro
 import { authphone, checkname, existphone, register } from "../../config/AxiosFunction";
 import DeviceInfo from 'react-native-device-info';
 import { Device, initialDevice } from "../../models/deviceInfo";
+import Header from "../Header";
 
 type SignUpName = {
   navigation?: any,
@@ -73,9 +74,13 @@ const SignUpName = ({ navigation, route }: SignUpName) => {
     console.log("deviceInfo ", deviceInfo);
     const response = await register(phone, nickname, deviceInfo);
     console.log(response.data);
-    if (response.status === 200) {
+    try {
       Alert.alert('회원가입을 완료했습니다!');
+      navigation.navigate('Home')
+    } catch {
+      Alert.alert('회원가입 실패했습니다!');
     }
+
 
   }
   const CheckNickName = async () => {
@@ -95,8 +100,7 @@ const SignUpName = ({ navigation, route }: SignUpName) => {
   }
   return (
     <View style={PhoneWrapper.MainContainer}>
-      <Image source={require('../../assets/title.png')}
-        style={PhoneWrapper.headerTitle} />
+      <Header />
       <View style={PhoneWrapper.WarnContainer}>
         <Text style={PhoneWrapper.PhoneTitle}>
           닉네임을 설정해주세요 :)

@@ -99,7 +99,7 @@ const homeWrapper = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
-        bottom: 50
+        bottom: 40
     },
     button: {
         width: 300,
