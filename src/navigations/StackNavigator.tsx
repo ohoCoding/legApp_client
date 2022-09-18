@@ -11,6 +11,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
 import SignUpPhone from '../components/SignUp/SignUpPhone';
 import SignUpAgree from '../components/SignUp/SignUpAgree';
+import SignUpVerify from '../components/SignUp/SignUpVerify';
+import SignUpName from '../components/SignUp/SignUpName';
+import CheckName from '../components/Check/CheckName';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,7 +26,7 @@ const StackNavigator = () => {
         name="Home"
         component={Home}
         options={{
-          headerShown: false
+          headerShown: false,
         }} />
       <Stack.Screen name="SignIn" component={SignIn} />
       {/* <Stack.Screen
@@ -42,25 +45,68 @@ const StackNavigator = () => {
       <Stack.Screen
         name="SignUpAgree"
         component={SignUpAgree}
-        options={{
-          title: '회원가입',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontSize: 20,
-            fontWeight: 'bold',
-          }
-        }} />
+        options={{ headerShown: false }}
+      // options={{
+      //   title: '회원가입',
+      //   headerTitleAlign: 'center',
+      //   headerTitleStyle: {
+      //     fontSize: 20,
+      //     fontWeight: 'bold',
+      //   }
+      // }} 
+      />
       <Stack.Screen
         name="SignUpPhone"
         component={SignUpPhone}
-        options={{
-          title: '휴대폰 인증',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontSize: 20,
-            fontWeight: 'bold',
-          }
-        }} />
+        options={{ headerShown: false }}
+      // options={{
+      //   title: '휴대폰 인증',
+      //   headerTitleAlign: 'center',
+      //   headerTitleStyle: {
+      //    fontSize: 20,
+      //     fontWeight: 'bold',
+      //   }
+      // }}  
+      />
+      <Stack.Screen
+        name="SignUpVerify"
+        component={SignUpVerify}
+        options={{ headerShown: false }}
+      // options={{
+      //   title: '휴대폰 인증',
+      //   headerTitleAlign: 'center',
+      //   headerTitleStyle: {
+      //    fontSize: 20,
+      //     fontWeight: 'bold',
+      //   }
+      // }}  
+      />
+      <Stack.Screen
+        name="SignUpName"
+        component={SignUpName}
+        options={{ headerShown: false }}
+      // options={{
+      //   title: '휴대폰 인증',
+      //   headerTitleAlign: 'center',
+      //   headerTitleStyle: {
+      //    fontSize: 20,
+      //     fontWeight: 'bold',
+      //   }
+      // }}  
+      />
+      <Stack.Screen
+        name="CheckName"
+        component={CheckName}
+        options={{ headerShown: false }}
+      // options={{
+      //   title: '휴대폰 인증',
+      //   headerTitleAlign: 'center',
+      //   headerTitleStyle: {
+      //    fontSize: 20,
+      //     fontWeight: 'bold',
+      //   }
+      // }}  
+      />
     </Stack.Navigator>
 
   );

@@ -1,40 +1,97 @@
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
-import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { Button, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import DeviceInfo from 'react-native-device-info';
+import { Device } from "../models/deviceInfo";
 
 const Home = ({ navigation }: { navigation: any }) => {
 
+    const [deviceInfo, setDeviceInfo] = useState<Device>({
+        deviceToken: '',
+        deviceType: '',
+        isNotificationAgreement: false,
+        isAdAgreement: false,
+        isNightAdAgreement: false,
+    });
+
+    const settingDeviceInfo = () => {
+        // try {
+        //   deviceInfo.deviceToken = DeviceInfo.getDeviceId()
+        // } catch (e) {
+        //   console.log(
+        //     'Unable to get device token.Either simulator or not iOS11 + ',
+        //   );
+        // }
+
+        setDeviceInfo({
+            deviceToken: DeviceInfo.getDeviceId(),
+            deviceType: DeviceInfo.getSystemName() === 'Android' ? 'GCM' : 'APNS',
+            isNotificationAgreement: true,
+            isAdAgreement: false,
+            isNightAdAgreement: false,
+        })
+    };
+    // useEffect(() => {
+
+    // }, [])
+
+    useEffect(() => {
+        settingDeviceInfo();
+    }, [])
+
+    const goSignUp = () => {
+        // DeviceToken이 어떤값인지 조사해볼것
+        console.log("기기 IMEI:", deviceInfo.deviceToken);
+        console.log("기기 TYPE:", deviceInfo.deviceType);
+        navigation.navigate('SignUpAgree', { deviceInfo: deviceInfo });
+    }
+
     return (
-        <View style={homeWrapper.MainContainer}>
-            <Image source={require('../assets/main.png')}
-                style={{ width: 100, height: 100 }}></Image>
-            <Text style={homeWrapper.mainTitle}>당신근처의 포장</Text>
-            <Text>시간설정 부터 바로 포장까지</Text>
-            <Text>지금 내 근처에서 가게를 설정하고 음식을 받아보세요!</Text>
-            <View style={homeWrapper.buttonView}>
-                <TouchableOpacity style={homeWrapper.button}>
-                    <Text style={homeWrapper.title} onPress={() => navigation.navigate('SignUpAgree')}>포장하기</Text>
-                </TouchableOpacity>
-                <View style={homeWrapper.confirmView}>
-                    <Text>이미 계정이 있나요?</Text>
-                    <Text style={homeWrapper.login} onPress={() => navigation.navigate('SignIn')}>로그인</Text>
+        <>
+            <View style={homeWrapper.MainContainer}>
+                {/* <Image source={require('../assets/main.png')}
+                style={{ width: 100, height: 100 }}></Image> */}
+                <Text style={homeWrapper.mainTitle}>지금은 음식 포장하러 가는 중</Text>
+                <Image source={require('../assets/title.png')}
+                    style={homeWrapper.headerTitle} />
+                <ImageBackground source={require('../assets/background.png')}
+                    style={homeWrapper.background} />
+                <View style={homeWrapper.buttonView}>
+                    <TouchableOpacity style={homeWrapper.button}>
+                        <Text style={homeWrapper.title} onPress={goSignUp}>포장하기</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
+            <View style={homeWrapper.confirmContainer}>
+                <Text style={homeWrapper.login}>이미 계정이 있나요?</Text>
+                <Text style={homeWrapper.login} onPress={() => navigation.navigate('SignIn')}>로그인</Text>
+            </View>
+        </>
 
-        </View>
     )
 }
 const homeWrapper = StyleSheet.create({
     MainContainer: {
-        flex: 1,
+        flex: 8.5,
         justifyContent: 'center',
         alignItems: 'center',
-
+        backgroundColor: 'white',
+        borderBottomLeftRadius: 40,
+        borderBottomRightRadius: 40,
     },
     mainTitle: {
-        paddingTop: 10,
+        paddingTop: 100,
         paddingBottom: 10,
-        fontWeight: "bold"
+        fontWeight: '700',
+        fontSize: 24
+    },
+    headerTitle: {
+        margin: 15,
+        width: '50%'
+    },
+    background: {
+        width: '100%',
+        height: '70%'
     },
     buttonView: {
         width: 200,
@@ -42,28 +99,34 @@ const homeWrapper = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
-        bottom: 100
+        bottom: 50
     },
     button: {
-        width: 200,
-        height: 30,
-        backgroundColor: '#2da6cf',
+        width: 300,
+        height: 50,
+        backgroundColor: '#3E3E3E',
         borderRadius: 10,
         justifyContent: "center",
         alignItems: "center"
     },
     title: {
-        color: 'white'
+        color: 'white',
+        fontSize: 20
     },
-    confirmView: {
-        paddingTop: 20,
+    confirmContainer: {
         display: 'flex',
+        flex: 1.5,
         flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00C1DE',
     },
     login: {
+        paddingBottom: 50,
         paddingLeft: 10,
-        color: "#2da6cf",
-        fontWeight: "bold"
+        color: "#FFFFFF",
+        fontWeight: "bold",
+        fontSize: 15
     }
 })
 export default Home;

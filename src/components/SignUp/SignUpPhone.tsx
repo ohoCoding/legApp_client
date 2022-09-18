@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { authpohe } from "../../config/AxiosFunction";
+import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { authphone } from "../../config/AxiosFunction";
 
-const SignUpPhone = () => {
+type SignUpPhone = {
+  navigation: any;
+  route?: any;
+}
+const SignUpPhone = ({ navigation, route }: SignUpPhone) => {
   const [input, setInput] = useState<string>('');
   const [buttonReady, setButtonReady] = useState<boolean>(false);
   const [authCode, setAuthCode] = useState<string>('');
@@ -18,24 +22,32 @@ const SignUpPhone = () => {
   }
 
   const getPhone = async () => {
-    const response = await authpohe(input);
-    console.log(response.data);
-    setAuthCode(response.data.authCode);
+    // const response = await authphone(input);
+    // console.log(response.data);
+    // setAuthCode(response.data.authCode);
+    navigation.navigate('SignUpVerify', { phone: input, deviceInfo: route.params?.deviceInfo })
   }
 
-  const ConfirmCode = () => {
-    if (verfify === authCode) {
-      Alert.alert('인증완료')
-    }
-  }
-  const InputVerify = (number: string) => {
-    setVerify(number);
-  }
+  // const ConfirmCode = () => {
+  //   if (verfify === authCode) {
+  //     Alert.alert('인증완료')
+  //     // navigation.navigate('SignUpAgree', { phone: input });
+  //     navigation.navigate('SignUpAgree')
+  //   }
+  // }
+  // const InputVerify = (number: string) => {
+  //   setVerify(number);
+  // }
   return (
     <View style={PhoneWrapper.MainContainer}>
+      <Image source={require('../../assets/title.png')}
+        style={PhoneWrapper.headerTitle} />
       <View style={PhoneWrapper.WarnContainer}>
         <Text style={PhoneWrapper.PhoneTitle}>
-          휴대폰 번호는 안전하게 보관되어 노출의 위험이 전혀 없습니다.
+          휴대폰 번호를 입력해주세요.
+        </Text>
+        <Text style={PhoneWrapper.SubPhoneTitle}>
+          본인인증을 위해 필요합니다.
         </Text>
       </View>
       <View style={PhoneWrapper.VerifyContainer}>
@@ -48,12 +60,13 @@ const SignUpPhone = () => {
         />
         <View
           style={{
-            backgroundColor: buttonReady === true ? '#2da6cf' : 'lightgray',
-            marginLeft: 20,
+            backgroundColor: buttonReady === true ? '#00C1DE' : 'lightgray',
             marginTop: 25,
             borderRadius: 8,
-            width: 120,
+            width: 300,
             height: 50,
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
           <TouchableOpacity
             style={PhoneWrapper.ButtonView}
@@ -63,7 +76,7 @@ const SignUpPhone = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={PhoneWrapper.CodeContainer}>
+      {/* <View style={PhoneWrapper.CodeContainer}>
         <TextInput
           style={PhoneWrapper.authCode}
           keyboardType={"number-pad"}
@@ -75,34 +88,72 @@ const SignUpPhone = () => {
           onPress={ConfirmCode}>
           <Text style={PhoneWrapper.ConfirmText}>확인</Text>
         </TouchableOpacity>
-      </View>
-
-
+      </View> */}
     </View>
   )
 }
 const PhoneWrapper = StyleSheet.create({
   MainContainer: {
-    backgroundColor: 'white',
+    display: 'flex',
     flex: 1,
-    display: "flex",
-    // flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    backgroundColor: 'white',
+  },
+  headerTitle: {
+    maxHeight: 100,
+    marginTop: 100,
+    width: '50%',
   },
   WarnContainer: {
+    marginTop: 20,
+    // display: 'flex',
+    // flex: 1,
     alignItems: 'center',
   },
+  PhoneTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: 'black',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  SubPhoneTitle: {
+    fontSize: 15,
+    fontWeight: '400',
+    color: '#B1B1B1'
+  },
   VerifyContainer: {
+    display: 'flex',
+    flex: 2,
+    paddingTop: 30,
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  PhoneNumberInput: {
+    width: 300,
+    height: 60,
+    fontSize: 15,
+    borderColor: 'lightgray',
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+  ButtonView: {
+    padding: 10,
+  },
+  ButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  CodeContainer: {
+    display: 'flex',
+    flex: 1,
     marginLeft: 50,
     flexDirection: 'row'
   },
-  PhoneTitle: {
-    width: 200,
-    fontWeight: 'bold',
-    color: 'black',
-    marginTop: 20,
-    marginBottom: 20
-  },
-  PhoneNumberInput: {
+  authCode: {
     marginTop: 25,
     width: 170,
     height: 50,
@@ -111,31 +162,8 @@ const PhoneWrapper = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
   },
-  ButtonView: {
-    padding: 10,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  ButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  CodeContainer: {
-    marginLeft: 50,
-    flexDirection: 'row'
-  },
-  authCode: {
-    marginTop: 30,
-    width: 170,
-    height: 50,
-    fontSize: 15,
-    borderColor: 'lightgray',
-    borderWidth: 1,
-    borderRadius: 10,
-  },
   ConfirmView: {
-    backgroundColor: '#2da6cf',
+    backgroundColor: '#00C1DE',
     marginLeft: 20,
     marginTop: 25,
     borderRadius: 8,
