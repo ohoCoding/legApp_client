@@ -1,7 +1,16 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { Agree } from "../models/agreeInfo";
 import { Device } from "../models/deviceInfo";
+import { PostLocation } from "../models/locationInfo";
 
 const hosturi = 'http://0giri.com/api';
+
+export const getAccessToken = async (data: string) => {
+  const accessToken = await AsyncStorage.getItem(data) || '';
+  return accessToken;
+}
+
 
 export const authphone = async (phone: string) => {
   try {
@@ -68,7 +77,7 @@ export const checkuser = async (nickname: string, phone: string) => {
   }
 }
 
-export const changeuser = async (deviveType: string, deviveToken: string, phone: string) => {
+export const changeuser = async (phone: string, deviveToken: string) => {
   try {
     const result = await axios({
       method: 'patch',
@@ -76,7 +85,6 @@ export const changeuser = async (deviveType: string, deviveToken: string, phone:
       // header: await AsyncStorage.getItem('session'), JWT 토큰 헤더에 담는 방법
       data: {
         phone: phone,
-        deviveType: deviveType,
         deviveToken: deviveToken,
       },
     })
@@ -86,7 +94,7 @@ export const changeuser = async (deviveType: string, deviveToken: string, phone:
   }
 }
 
-export const register = async (phone: string, nickname: string, deviceInfo: Device) => {
+export const register = async (phone: string, nickname: string, deviceToken: string, userPolicyTerms: Agree) => {
   try {
     const result = await axios({
       method: 'post',
@@ -95,7 +103,8 @@ export const register = async (phone: string, nickname: string, deviceInfo: Devi
       data: {
         phone: phone,
         nickname: nickname,
-        device: deviceInfo
+        deviceToken: deviceToken,
+        userPolicyTerms: userPolicyTerms
       },
     })
     return result;
@@ -113,6 +122,42 @@ export const login = async (phone: string, deviceToken: string) => {
       data: {
         phone: phone,
         deviceToken: deviceToken
+      },
+    })
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}
+
+//위치설정
+export const location = async (data: PostLocation, accessToken: string) => {
+  console.log("axios", data);
+  console.log(accessToken);
+
+  try {
+    const result = await axios({
+      method: 'post',
+      url: hosturi + '/users/locations',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+      // header: await AsyncStorage.getItem('session'), JWT 토큰 헤더에 담는 방법
+      data: {
+        alias: data.alias,
+        isMarked: data.isMarked,
+        address: {
+          regionAddress: data.address.regionAddress,
+          roadAddress: data.address.roadAddress,
+          locationName: data.address.locationName,
+          depth1: data.address.depth1,
+          depth2: data.address.depth2,
+          depth3: data.address.depth3,
+          detail: data.address.detail,
+          lng: data.address.lng,
+          lat: data.address.lat
+        }
       },
     })
     return result;

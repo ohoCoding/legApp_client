@@ -1,49 +1,105 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import DeviceInfo from 'react-native-device-info';
-import { Device } from "../models/deviceInfo";
+import { Alert, Button, Image, ImageBackground, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Geolocation from 'react-native-geolocation-service';
+import { PermissionsAndroid } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
 
-const Home = ({ navigation }: { navigation: any }) => {
+type HomeProps = {
+    navigation: any;
+}
+interface ILocation {
+    latitude: number;
+    longitude: number;
+}
 
-    const [deviceInfo, setDeviceInfo] = useState<Device>({
-        deviceToken: '',
-        deviceType: '',
-        isNotificationAgreement: false,
-        isAdAgreement: false,
-        isNightAdAgreement: false,
+const Home = ({ navigation }: HomeProps) => {
+
+    const [token, setToken] = useState<string>('');
+
+    const [location, setLocation] = useState<ILocation>({
+        latitude: 0,
+        longitude: 0
     });
 
-    const settingDeviceInfo = () => {
-        // try {
-        //   deviceInfo.deviceToken = DeviceInfo.getDeviceId()
-        // } catch (e) {
-        //   console.log(
-        //     'Unable to get device token.Either simulator or not iOS11 + ',
-        //   );
-        // }
+    // 토큰 설정
+    useEffect(() => {
+        async function getToken() {
+            try {
+                //ios 알림 권한 요청
+                const authStatus = await messaging().requestPermission();
+                const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+                if (enabled) {
+                    const token = await messaging().getToken();
+                    //푸시 토큰 표시 
+                    console.log('Home Device Token 1st', token);
+                    setToken(token);
+                    console.log('Authorization status:', authStatus);
+                } else {
+                    console.log('fcm auth fail');
+                }
+                //원격 알림에 등록했는지 여부
+                if (!messaging().isDeviceRegisteredForRemoteMessages) {
+                    await messaging().registerDeviceForRemoteMessages();
+                }
+                const token = await messaging().getToken();
+                //푸시 토큰 표시 
+                console.log('Home Device Token 2nd', token);
+                setToken(token);
 
-        setDeviceInfo({
-            deviceToken: DeviceInfo.getDeviceId(),
-            deviceType: DeviceInfo.getSystemName() === 'Android' ? 'GCM' : 'APNS',
-            isNotificationAgreement: true,
-            isAdAgreement: false,
-            isNightAdAgreement: false,
-        })
-    };
-    // useEffect(() => {
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        getToken();
+    }, []);
 
-    // }, [])
+    // 현재 위치 사용 권한 설정
+    useEffect(() => {
+        async function requestLocationPermission() {
+            try {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                )
+                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                    console.log("You can use the location")
+                } else {
+                    console.log("location permission denied")
+                }
+            } catch (err) {
+                console.warn(err)
+            }
+        }
+        requestLocationPermission()
+    }, [])
+
+    // 현재 기기 위치 뽑기
+    useEffect(() => {
+        Geolocation.getCurrentPosition(
+            position => {
+                const { latitude, longitude } = position.coords;
+                setLocation({ latitude, longitude });
+            },
+            error => {
+                console.log(error.code, error.message);
+            },
+            {
+                enableHighAccuracy: true,
+                distanceFilter: 0,
+            },
+        )
+    }, [])
 
     useEffect(() => {
-        settingDeviceInfo();
-    }, [])
+        if (location) {
+            console.log("Home Location", location);
+        }
+    }, [location])
 
     const goSignUp = () => {
         // DeviceToken이 어떤값인지 조사해볼것
-        console.log("기기 IMEI:", deviceInfo.deviceToken);
-        console.log("기기 TYPE:", deviceInfo.deviceType);
-        navigation.navigate('SignUpAgree', { deviceInfo: deviceInfo });
+        // console.log("기기 TYPE:", deviceInfo.deviceType);
+        navigation.navigate('SignUpAgree', { deviceInfo: token });
     }
 
     return (
@@ -57,14 +113,14 @@ const Home = ({ navigation }: { navigation: any }) => {
                 <ImageBackground source={require('../assets/background.png')}
                     style={homeWrapper.background} />
                 <View style={homeWrapper.buttonView}>
-                    <TouchableOpacity style={homeWrapper.button}>
-                        <Text style={homeWrapper.title} onPress={goSignUp}>포장하기</Text>
+                    <TouchableOpacity style={homeWrapper.button} onPress={goSignUp}>
+                        <Text style={homeWrapper.title} >포장하기</Text>
                     </TouchableOpacity>
                 </View>
             </View>
             <View style={homeWrapper.confirmContainer}>
                 <Text style={homeWrapper.login}>이미 계정이 있나요?</Text>
-                <Text style={homeWrapper.login} onPress={() => navigation.navigate('SignIn')}>로그인</Text>
+                <Text style={homeWrapper.login} onPress={() => navigation.navigate('SignInPhone')}>로그인</Text>
             </View>
         </>
 

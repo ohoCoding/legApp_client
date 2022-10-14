@@ -6,7 +6,7 @@ import Settings from './src/pages/Settings';
 import Orders from './src/pages/Orders';
 import Delivery from './src/pages/Delivery';
 import { useEffect, useState } from 'react';
-import SignIn from './src/pages/SignIn';
+import SignIn from './src/components/SignIn/SignInPhone';
 import SignUp from './src/pages/SignUp';
 import SplashScreen from 'react-native-splash-screen';
 import Home from './src/pages/Home';

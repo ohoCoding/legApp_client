@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-ionicons'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import Home from '../pages/Home';
 import Orders from '../pages/Orders';
 import Delivery from '../pages/Delivery';

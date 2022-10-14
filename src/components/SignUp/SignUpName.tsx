@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { authphone, checkname, existphone, register } from "../../config/AxiosFunction";
+import { authphone, checkname, existphone, login, register } from "../../config/AxiosFunction";
 import DeviceInfo from 'react-native-device-info';
 import { Device, initialDevice } from "../../models/deviceInfo";
 import Header from "../Header";
+import { Agree, initialAgree } from "../../models/agreeInfo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type SignUpName = {
   navigation?: any,
@@ -12,92 +14,62 @@ type SignUpName = {
 
 const SignUpName = ({ navigation, route }: SignUpName) => {
   const [phone, setPhone] = useState<string>('');
-  const [buttonReady, setButtonReady] = useState<boolean>(false);
-
-  const [authCode, setAuthCode] = useState<string>('');
   const [nickname, setNickname] = useState<string>('');
   const [deviceInfo, setDeviceInfo] = useState<Device>(initialDevice);
-  const [isCheck, setIsCheck] = useState<boolean>(false);
-  // async function Verify(phone: string) {
-  //   console.log(phone);
-  //   const response = await authphone(phone);
-  //   console.log(response.data);
-  //   setAuthCode(response.data.authCode);
-  // }
-
-  const settingDeviceInfo = async () => {
-    try {
-      deviceInfo.deviceToken = DeviceInfo.getDeviceId()
-    } catch (e) {
-      console.log(
-        'Unable to get device token.Either simulator or not iOS11 + ',
-      );
-    }
-
-    setDeviceInfo({
-      ...deviceInfo,
-      deviceType: DeviceInfo.getSystemName() === 'Android' ? 'GCM' : 'APNS',
-      isNotificationAgreement: true,
-      isAdAgreement: false,
-      isNightAdAgreement: false,
-    })
-  }
-
+  const [userPolicyTerms, setUserPolicTerms] = useState<Agree>(initialAgree);
 
   useEffect(() => {
+    console.log("닉네임 설정 페이지 전달받은 폰번호:", route.params?.phone);
+    console.log("닉네임 설정 페이지 기기 IMEI:", route.params?.deviceInfo);
+    console.log("닉네임 설정 페이지 동의 정보:", route.params?.userPolicyTerms);
+
     setPhone(route.params?.phone);
-    setDeviceInfo(route.params?.deviceInfo);
-    console.log("전달받은 폰번호:", route.params?.phone);
-    // DeviceToken이 어떤값인지 조사해볼것
-    console.log("기기 IMEI:", deviceInfo.deviceToken);
-    console.log("기기 TYPE:", deviceInfo.deviceType);
-    // Verify(route.params?.phone)
+    setDeviceInfo({ deviceToken: route.params?.deviceInfo });
+    setUserPolicTerms(route.params?.userPolicyTerms)
   }, [])
-  // const ButtonChange = (text: string) => {
-  //   setInput(text);
-  //   if (text.length < 11) {
-  //     setButtonReady(false)
-  //   } else if (text.length === 11) {
-  //     setButtonReady(true);
-  //   }
-  // }
 
-  // const getPhone = async () => {
-  //   const response = await authpohe(input);
-  //   console.log(response.data);
-  //   setAuthCode(response.data.authCode);
-  // }
-
+  //회원가입
   const Register = async () => {
     console.log("phone ", phone);
     console.log("nickname", nickname);
-    console.log("deviceInfo ", deviceInfo);
-    const response = await register(phone, nickname, deviceInfo);
-    console.log(response.data);
-    try {
+    console.log("deviceInfo ", deviceInfo.deviceToken);
+    console.log("AgreeInfo", userPolicyTerms);
+
+    const response = await register(phone, nickname, deviceInfo.deviceToken, userPolicyTerms);
+    // console.log(response.data);
+    if (response.status === 200) {
       Alert.alert('회원가입을 완료했습니다!');
-      navigation.navigate('Home')
-    } catch {
+      // 로그인 시도 
+      const response = await login(phone, deviceInfo.deviceToken)
+      try {
+        console.log("로그인 성공", response);
+        await AsyncStorage.setItem('accessToken', response.data.accessToken);
+        await AsyncStorage.setItem('refreshToken', response.data.refreshToken);
+        navigation.navigate('LocationSetting')
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
       Alert.alert('회원가입 실패했습니다!');
     }
 
-
   }
+
+  // 닉네임 중복 체크
   const CheckNickName = async () => {
     const response = await checkname(nickname);
     console.log(response.data);
     if (response.data == true) {
-      Alert.alert('사용가능합니다.');
-      setIsCheck(true)
-      // navigation.navigate('SignUpAgree', { phone: input });
-      // navigation.navigate('Home')
-    } else {
       Alert.alert('다른 닉네임을 사용하시기 바랍니다.');
+    } else {
+      Alert.alert('사용가능합니다.');
     }
   }
   const InputNickName = (name: string) => {
     setNickname(name);
   }
+
+
   return (
     <View style={PhoneWrapper.MainContainer}>
       <Header />
@@ -109,32 +81,7 @@ const SignUpName = ({ navigation, route }: SignUpName) => {
           사장님과 소통할 내 닉네임은?
         </Text>
       </View>
-      {/* <View style={PhoneWrapper.VerifyContainer}>
-        <TextInput style={PhoneWrapper.PhoneNumberInput}
-          placeholder=" - 없이 숫자만 입력"
-          keyboardType={"number-pad"}
-          maxLength={11}
-          dataDetectorTypes="phoneNumber"
-          onChangeText={value => ButtonChange(value)}
-        />
-        <View
-          style={{
-            backgroundColor: buttonReady === true ? '#00C1DE' : 'lightgray',
-            marginTop: 25,
-            borderRadius: 8,
-            width: 300,
-            height: 50,
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-          <TouchableOpacity
-            style={PhoneWrapper.ButtonView}
-            disabled={!buttonReady}
-            onPress={getPhone}>
-            <Text style={PhoneWrapper.ButtonText}>인증번호 받기</Text>
-          </TouchableOpacity>
-        </View>
-      </View> */}
+
       <View style={PhoneWrapper.CodeContainer}>
         <TextInput
           style={PhoneWrapper.authCode}
@@ -148,8 +95,8 @@ const SignUpName = ({ navigation, route }: SignUpName) => {
           onPress={CheckNickName}>
           <Text style={PhoneWrapper.ConfirmText}>중복확인</Text>
         </TouchableOpacity>
-
       </View>
+
       <View style={PhoneWrapper.RegisterContainer}>
         <TouchableOpacity style={PhoneWrapper.Register}
           onPress={Register}>

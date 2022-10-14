@@ -1,7 +1,8 @@
 import CheckBox from "@react-native-community/checkbox";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Agree } from "../../models/agreeInfo";
 import Header from "../Header";
 
 type SignUpAgree = {
@@ -20,12 +21,34 @@ const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
   const check = (e: ChangeEvent<HTMLInputElement>) => {
     // e.target ? setCheckList([...checkList, e.target]) : setCheckList(checkList.filter((choice) => choice !== e.target));
   }
-  useEffect(() => {
-    console.log(route.params?.deviceInfo);
+  const [userPolicyTerms, setUserPolicTerms] = useState<Agree>({
+    agreePolicy1: false,
+    agreePolicy2: false,
+    agreePolicy3: false
+  });
 
-  })
+  const settingUserPolicyInfo = useCallback(() => {
+    // try {
+    //   deviceInfo.deviceToken = DeviceInfo.getDeviceId()
+    // } catch (e) {
+    //   console.log(
+    //     'Unable to get device token.Either simulator or not iOS11 + ',
+    //   );
+    // }
+    setUserPolicTerms({
+      agreePolicy1: true,
+      agreePolicy2: true,
+      agreePolicy3: true
+    })
+  }, []);
+
+  useEffect(() => {
+    console.log("동의 Token:", route.params?.deviceInfo);
+    settingUserPolicyInfo()
+  }, [])
+
   const goSignUpPhone = () => {
-    navigation.navigate('SignUpPhone', { deviceInfo: route.params?.deviceInfo })
+    navigation.navigate('SignUpPhone', { deviceInfo: route.params?.deviceInfo, userPolicyTerms: userPolicyTerms })
   }
 
   return (

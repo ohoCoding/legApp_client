@@ -14,10 +14,10 @@ const CheckName = ({ navigation, route }: CheckName) => {
 
   const [deviceInfo, setDeviceInfo] = useState<Device>({
     deviceToken: '',
-    deviceType: '',
-    isNotificationAgreement: false,
-    isAdAgreement: false,
-    isNightAdAgreement: false,
+    // deviceType: '',
+    // isNotificationAgreement: false,
+    // isAdAgreement: false,
+    // isNightAdAgreement: false,
   });
 
   const settingDeviceInfo = () => {
@@ -31,10 +31,10 @@ const CheckName = ({ navigation, route }: CheckName) => {
 
     setDeviceInfo({
       deviceToken: DeviceInfo.getDeviceId() + 1,
-      deviceType: DeviceInfo.getSystemName() === 'Android' ? 'GCM' : 'APNS',
-      isNotificationAgreement: true,
-      isAdAgreement: false,
-      isNightAdAgreement: false,
+      // deviceType: DeviceInfo.getSystemName() === 'Android' ? 'GCM' : 'APNS',
+      // isNotificationAgreement: true,
+      // isAdAgreement: false,
+      // isNightAdAgreement: false,
     })
   };
   // useEffect(() => {
@@ -55,7 +55,7 @@ const CheckName = ({ navigation, route }: CheckName) => {
     } else {
 
       try {
-        const response = await changeuser(route.params?.phone, deviceInfo.deviceType, deviceInfo.deviceToken)
+        const response = await changeuser(route.params?.phone, deviceInfo.deviceToken)
         if (response.status === 200) {
           console.log('로그인 성공', response.status);
           navigation.navigate('Home')

@@ -10,8 +10,6 @@ type SignUpPhone = {
 const SignUpPhone = ({ navigation, route }: SignUpPhone) => {
   const [input, setInput] = useState<string>('');
   const [buttonReady, setButtonReady] = useState<boolean>(false);
-  const [authCode, setAuthCode] = useState<string>('');
-  const [verfify, setVerify] = useState<string>('');
 
   const ButtonChange = (text: string) => {
     setInput(text);
@@ -21,24 +19,14 @@ const SignUpPhone = ({ navigation, route }: SignUpPhone) => {
       setButtonReady(true);
     }
   }
+  useEffect(() => {
+    console.log("핸드폰 Token:", route.params?.deviceInfo);
+  }, [])
 
   const getPhone = async () => {
-    // const response = await authphone(input);
-    // console.log(response.data);
-    // setAuthCode(response.data.authCode);
-    navigation.navigate('SignUpVerify', { phone: input, deviceInfo: route.params?.deviceInfo })
+    navigation.navigate('SignUpVerify', { phone: input, deviceInfo: route.params?.deviceInfo, userPolicyTerms: route.params?.userPolicyTerms })
   }
 
-  // const ConfirmCode = () => {
-  //   if (verfify === authCode) {
-  //     Alert.alert('인증완료')
-  //     // navigation.navigate('SignUpAgree', { phone: input });
-  //     navigation.navigate('SignUpAgree')
-  //   }
-  // }
-  // const InputVerify = (number: string) => {
-  //   setVerify(number);
-  // }
   return (
     <View style={PhoneWrapper.MainContainer}>
       <Header />
@@ -76,19 +64,6 @@ const SignUpPhone = ({ navigation, route }: SignUpPhone) => {
           </TouchableOpacity>
         </View>
       </View>
-      {/* <View style={PhoneWrapper.CodeContainer}>
-        <TextInput
-          style={PhoneWrapper.authCode}
-          keyboardType={"number-pad"}
-          onChangeText={value => InputVerify(value)}
-          placeholder="인증번호 입력해주세요">
-        </TextInput>
-        <TouchableOpacity
-          style={PhoneWrapper.ConfirmView}
-          onPress={ConfirmCode}>
-          <Text style={PhoneWrapper.ConfirmText}>확인</Text>
-        </TouchableOpacity>
-      </View> */}
     </View>
   )
 }
