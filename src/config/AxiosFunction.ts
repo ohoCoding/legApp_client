@@ -104,7 +104,7 @@ export const register = async (phone: string, nickname: string, deviceToken: str
         phone: phone,
         nickname: nickname,
         deviceToken: deviceToken,
-        userPolicyTerms: userPolicyTerms
+        policyTerms: userPolicyTerms
       },
     })
     return result;
