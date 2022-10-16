@@ -1,13 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { authphone } from "../../config/AxiosFunction";
-import Header from "../Header";
+import React, {useEffect, useState} from 'react';
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {authphone} from '../../config/AxiosFunction';
+import Header from '../Header';
 
 type SignUpPhone = {
   navigation: any;
   route?: any;
-}
-const SignUpPhone = ({ navigation, route }: SignUpPhone) => {
+};
+const SignUpPhone = ({navigation, route}: SignUpPhone) => {
   const [input, setInput] = useState<string>('');
   const [buttonReady, setButtonReady] = useState<boolean>(false);
   const [authCode, setAuthCode] = useState<string>('');
@@ -16,18 +24,25 @@ const SignUpPhone = ({ navigation, route }: SignUpPhone) => {
   const ButtonChange = (text: string) => {
     setInput(text);
     if (text.length < 11) {
-      setButtonReady(false)
+      setButtonReady(false);
     } else if (text.length === 11) {
       setButtonReady(true);
     }
-  }
+  };
 
   const getPhone = async () => {
     // const response = await authphone(input);
     // console.log(response.data);
     // setAuthCode(response.data.authCode);
-    navigation.navigate('SignUpVerify', { phone: input, deviceInfo: route.params?.deviceInfo })
-  }
+    navigation.navigate('SignUpVerify', {
+      phone: input,
+      deviceInfo: route.params?.deviceInfo,
+    });
+  };
+
+  const goNotice = () => {
+    navigation.navigate('notice', {});
+  };
 
   // const ConfirmCode = () => {
   //   if (verfify === authCode) {
@@ -43,17 +58,16 @@ const SignUpPhone = ({ navigation, route }: SignUpPhone) => {
     <View style={PhoneWrapper.MainContainer}>
       <Header />
       <View style={PhoneWrapper.WarnContainer}>
-        <Text style={PhoneWrapper.PhoneTitle}>
-          휴대폰 번호를 입력해주세요.
-        </Text>
+        <Text style={PhoneWrapper.PhoneTitle}>휴대폰 번호를 입력해주세요.</Text>
         <Text style={PhoneWrapper.SubPhoneTitle}>
           본인인증을 위해 필요합니다.
         </Text>
       </View>
       <View style={PhoneWrapper.VerifyContainer}>
-        <TextInput style={PhoneWrapper.PhoneNumberInput}
+        <TextInput
+          style={PhoneWrapper.PhoneNumberInput}
           placeholder=" - 없이 숫자만 입력"
-          keyboardType={"number-pad"}
+          keyboardType={'number-pad'}
           maxLength={11}
           dataDetectorTypes="phoneNumber"
           onChangeText={value => ButtonChange(value)}
@@ -66,13 +80,18 @@ const SignUpPhone = ({ navigation, route }: SignUpPhone) => {
             width: 300,
             height: 50,
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}>
           <TouchableOpacity
             style={PhoneWrapper.ButtonView}
             disabled={!buttonReady}
             onPress={getPhone}>
             <Text style={PhoneWrapper.ButtonText}>인증번호 받기</Text>
+          </TouchableOpacity>
+        </View>
+        <View>
+          <TouchableOpacity onPress={goNotice}>
+            <Text>공지사항</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -90,8 +109,8 @@ const SignUpPhone = ({ navigation, route }: SignUpPhone) => {
         </TouchableOpacity>
       </View> */}
     </View>
-  )
-}
+  );
+};
 const PhoneWrapper = StyleSheet.create({
   MainContainer: {
     display: 'flex',
@@ -122,7 +141,7 @@ const PhoneWrapper = StyleSheet.create({
   SubPhoneTitle: {
     fontSize: 15,
     fontWeight: '400',
-    color: '#B1B1B1'
+    color: '#B1B1B1',
   },
   VerifyContainer: {
     display: 'flex',
@@ -151,7 +170,7 @@ const PhoneWrapper = StyleSheet.create({
     display: 'flex',
     flex: 1,
     marginLeft: 50,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   authCode: {
     marginTop: 25,
@@ -170,12 +189,12 @@ const PhoneWrapper = StyleSheet.create({
     width: 120,
     height: 50,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   ConfirmText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 15,
-  }
-})
+  },
+});
 export default SignUpPhone;

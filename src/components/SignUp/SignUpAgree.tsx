@@ -1,40 +1,49 @@
-import CheckBox from "@react-native-community/checkbox";
-import React, { ChangeEvent, useEffect, useState } from "react";
-import { Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Header from "../Header";
+import CheckBox from '@react-native-community/checkbox';
+import React, {ChangeEvent, useEffect, useState} from 'react';
+import {
+  Image,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import Header from '../Header';
 
 type SignUpAgree = {
   navigation: any;
   route?: any;
-}
+};
 
-const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
+const SignUpAgree = ({navigation, route}: SignUpAgree) => {
   const [checkList, setCheckList] = useState<boolean[]>([]);
   const [allCheckBox, setAllCheckBox] = useState(false);
   const [infoCheckBox, setInfoCheckBox] = useState(false);
   const [eventCheckBox, setEventCheckBox] = useState(false);
   const checkAll = (e: ChangeEvent<HTMLInputElement>) => {
     // e.target.lib ? setCheckList([allCheckBox, infoCheckBox, eventCheckBox]) : setCheckList([]);
-  }
+  };
   const check = (e: ChangeEvent<HTMLInputElement>) => {
     // e.target ? setCheckList([...checkList, e.target]) : setCheckList(checkList.filter((choice) => choice !== e.target));
-  }
+  };
   useEffect(() => {
     console.log(route.params?.deviceInfo);
-
-  })
+  });
   const goSignUpPhone = () => {
-    navigation.navigate('SignUpPhone', { deviceInfo: route.params?.deviceInfo })
-  }
+    navigation.navigate('SignUpPhone', {deviceInfo: route.params?.deviceInfo});
+  };
+  const goNotice = () => {
+    navigation.navigate('notice');
+  };
 
   return (
     <View style={AgreeWrapper.MainContainer}>
       <Header />
       <View style={AgreeWrapper.AgreeContainter}>
-        <Text style={AgreeWrapper.AgreeTitle}>
-          이용 약관에 동의해주세요.
-        </Text>
+        <Text style={AgreeWrapper.AgreeTitle}>이용 약관에 동의해주세요.</Text>
         <View style={AgreeWrapper.AgreeBox}>
           <CheckBox
             nativeID="all"
@@ -42,7 +51,8 @@ const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
             disabled={false}
             onValueChange={setAllCheckBox}
             value={allCheckBox}
-            onChange={checkAll} />
+            onChange={checkAll}
+          />
           <Text style={AgreeWrapper.checkText}> 전체 동의</Text>
         </View>
         <View style={AgreeWrapper.AgreeBox}>
@@ -51,8 +61,12 @@ const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
             disabled={false}
             onValueChange={setInfoCheckBox}
             value={infoCheckBox}
-            onChange={check} />
-          <Text style={AgreeWrapper.checkText}> [필수] 개인정보 수집 및 이용 동의</Text>
+            onChange={check}
+          />
+          <Text style={AgreeWrapper.checkText}>
+            {' '}
+            [필수] 개인정보 수집 및 이용 동의
+          </Text>
         </View>
         <View style={AgreeWrapper.AgreeBox}>
           <CheckBox
@@ -60,11 +74,22 @@ const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
             disabled={false}
             onValueChange={setEventCheckBox}
             value={eventCheckBox}
-            onChange={check} />
-          <Text style={AgreeWrapper.checkText}> [선택] 이벤트 정보 수신 동의</Text>
+            onChange={check}
+          />
+          <Text style={AgreeWrapper.checkText}>
+            {' '}
+            [선택] 이벤트 정보 수신 동의
+          </Text>
         </View>
         <TouchableOpacity style={AgreeWrapper.button}>
-          <Text style={AgreeWrapper.verify} onPress={goSignUpPhone}>인증하기</Text>
+          <Text style={AgreeWrapper.verify} onPress={goSignUpPhone}>
+            인증하기
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text style={AgreeWrapper.verify} onPress={goNotice}>
+            공지사항
+          </Text>
         </TouchableOpacity>
       </View>
       {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -78,9 +103,8 @@ const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
         </View>
       </TouchableWithoutFeedback> */}
     </View>
-
-  )
-}
+  );
+};
 const AgreeWrapper = StyleSheet.create({
   MainContainer: {
     display: 'flex',
@@ -105,7 +129,7 @@ const AgreeWrapper = StyleSheet.create({
     color: 'black',
     marginTop: 20,
     marginBottom: 20,
-    fontSize: 20
+    fontSize: 20,
   },
   AgreeBox: {
     width: 300,
@@ -114,30 +138,30 @@ const AgreeWrapper = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     borderColor: 'lightgray',
-    display: "flex",
-    flexDirection: "row",
-    alignItems: 'center'
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   checkBox: {
     margin: 5,
   },
   checkText: {
     fontSize: 15,
-    fontWeight: '700'
+    fontWeight: '700',
   },
   button: {
     width: 300,
     height: 50,
     backgroundColor: '#00C1DE',
     borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 50,
   },
   verify: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 20
+    fontSize: 20,
   },
   phoneBox: {
     marginTop: 100,
@@ -145,7 +169,7 @@ const AgreeWrapper = StyleSheet.create({
     flex: 2,
   },
   phone: {
-    color: 'black'
+    color: 'black',
   },
   PhoneNumberInput: {
     width: 280,
@@ -155,5 +179,5 @@ const AgreeWrapper = StyleSheet.create({
     borderBottomWidth: 1,
     borderRadius: 10,
   },
-})
+});
 export default SignUpAgree;

@@ -1,33 +1,32 @@
 import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import Settings from './src/pages/Settings';
 import Orders from './src/pages/Orders';
 import Delivery from './src/pages/Delivery';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import SignIn from './src/pages/SignIn';
 import SignUp from './src/pages/SignUp';
 import SplashScreen from 'react-native-splash-screen';
 import Home from './src/pages/Home';
 import StackNavigator from './src/navigations/StackNavigator';
-import { Provider, useSelector } from 'react-redux';
+import {Provider, useSelector} from 'react-redux';
 import store from './src/store';
-import { RootState } from './src/store/reducer';
+import {RootState} from './src/store/reducer';
 import Router from './Router';
 
 export type LoggedInParamList = {
   Orders: undefined;
   Settings: undefined;
   Delivery: undefined;
-  Complete: { orderId: string };
+  Complete: {orderId: string};
 };
 
 export type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
 };
-
 
 function App() {
   // state는 전체 상태에서 뽑은것
