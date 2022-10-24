@@ -3,6 +3,8 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import Geolocation from 'react-native-geolocation-service';
 import axios from "axios";
+import { getAccessToken, mylocation } from "../../config/AxiosFunction";
+import BottomPopup from "../BottomPopUp";
 
 interface ILocation {
   latitude: number;
@@ -10,16 +12,43 @@ interface ILocation {
 }
 
 type LocationSetting = {
-  navigation?: any,
-  route: any
+  navigation?: any;
+  route: any;
 }
 
+type MyLocation = {
+  locationId: number;
+  userId: number;
+  alias: string;
+  isActive: boolean;
+  address: {
+    regionAddress: string;
+    roadAddress: string;
+    locationName: string;
+    depth1: string;
+    depth2: string;
+    depth3: string;
+    detail: string;
+    lng: number;
+    lat: number;
+  }
+};
+
 const LocationSetting = ({ navigation, route }: LocationSetting) => {
-  const [input, setInput] = useState<string>('');
   const [location, setLocation] = useState<ILocation>({
     latitude: 0,
     longitude: 0
   });
+  const [myLocationList, setMyLocationList] = useState<MyLocation[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const MyLocationSetting = async () => {
+    const accessToken = await getAccessToken('accessToken');
+    const response = await mylocation(accessToken);
+    console.log(response.data);
+    setMyLocationList(response.data);
+
+  }
 
   useEffect(() => {
     Geolocation.getCurrentPosition(
@@ -37,6 +66,21 @@ const LocationSetting = ({ navigation, route }: LocationSetting) => {
         distanceFilter: 0,
       },
     )
+    MyLocationSetting();
+  }, [])
+
+  const openModal = () => {
+    setModalOpen(true);
+  }
+
+  const closeModal = () => {
+    setModalOpen(false);
+  }
+
+  useEffect(() => {
+    if (route.params?.registSucess) {
+      openModal()
+    }
   }, [])
 
   //현재 위치로 주소설정
@@ -57,35 +101,6 @@ const LocationSetting = ({ navigation, route }: LocationSetting) => {
     }
   }
 
-  const onPress = useCallback((e: { nativeEvent: { text: string; }; }) => {
-    const { text } = e.nativeEvent;
-    console.log(e.nativeEvent);
-    console.log(typeof (text));
-    if (text) {
-      axios.get(
-        `https://dapi.kakao.com/v2/local/search/address.json?query=${text}`,
-        {
-          headers: {
-            Authorization: 'KakaoAK b49d403eab459f2dcb5d7b635c14139b',
-          },
-        },
-      ).then((result) => {
-        console.log(result);
-
-      })
-    }
-
-
-  }, []);
-
-  useEffect(() => {
-    if (location)
-      console.log("location", location);
-  })
-
-  const changeValue = (text: string) => {
-    setInput(text)
-  }
   return (
     <>
       <View style={LocationWrapper.MainContainer}>
@@ -93,9 +108,9 @@ const LocationSetting = ({ navigation, route }: LocationSetting) => {
         <View style={LocationWrapper.SearchContainer}>
           <Icon name='search-outline' size={20} color="black" />
           <TextInput
-            onSubmitEditing={onPress}
-            placeholder="건물명, 도로명 또는 지번으로 검색"
-            onChangeText={value => setInput(value)} />
+            onPressIn={() => navigation.navigate('LocationSearch')}
+            // onKeyPress={() => navigation.navigate('LocationSearch')}
+            placeholder="건물명, 도로명 또는 지번으로 검색" />
         </View>
         <View style={LocationWrapper.CureernLocationContinaer}>
           <Icon name='compass-outline' size={20} color="#00C1DE" />
@@ -103,21 +118,24 @@ const LocationSetting = ({ navigation, route }: LocationSetting) => {
         </View>
       </View>
       <View style={LocationWrapper.Horizon}></View>
-      <View style={LocationWrapper.RecommandContainer}>
-        <Text style={LocationWrapper.RecommandSearch}>이렇게 검색해보세요🔎</Text>
-
-        <View style={LocationWrapper.exampleWrapper}>
-          <Text style={LocationWrapper.form}>도로명 + 건물번호</Text>
-          <Text style={LocationWrapper.example}>ex. 서초로 38길 12</Text>
-
-          <Text style={LocationWrapper.form}>지역명(동/리) + 번지</Text>
-          <Text style={LocationWrapper.example}>ex. 서초로 1498-5</Text>
-
-          <Text style={LocationWrapper.form}>지역명(동/리) + 건물명(아파트명)</Text>
-          <Text style={LocationWrapper.example}>ex. 서초동 렛잇고빌딩</Text>
+      {myLocationList.length > 0 ?
+        myLocationList.map((myLocation: MyLocation, index: number) =>
+          <View key={index} style={LocationWrapper.RecommandContainer}>
+            <Text>{myLocation.address.roadAddress}</Text>
+            <Text>{myLocation.address.regionAddress}</Text>
+          </View>
+        )
+        :
+        <View style={LocationWrapper.RecommandContainer}>
+          <Text style={LocationWrapper.RecommandSearch}>아직 설정한 장소가 없습니다!</Text>
         </View>
-
-      </View>
+      }
+      <BottomPopup
+        open={modalOpen}
+        close={closeModal}
+        header={"회원가입 완료!"}
+        onTouchOutSide={closeModal}
+      />
     </>
   )
 }

@@ -6,6 +6,7 @@ import { Device, initialDevice } from "../../models/deviceInfo";
 import Header from "../Header";
 import { Agree, initialAgree } from "../../models/agreeInfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import BottomPopup from "../BottomPopUp";
 
 type SignUpName = {
   navigation?: any,
@@ -15,6 +16,8 @@ type SignUpName = {
 const SignUpName = ({ navigation, route }: SignUpName) => {
   const [phone, setPhone] = useState<string>('');
   const [nickname, setNickname] = useState<string>('');
+  const [nameValid, setNameValid] = useState<boolean>(true);
+  const [modalOpen, setModalOpen] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState<Device>(initialDevice);
   const [userPolicyTerms, setUserPolicTerms] = useState<Agree>(initialAgree);
 
@@ -38,14 +41,15 @@ const SignUpName = ({ navigation, route }: SignUpName) => {
     const response = await register(phone, nickname, deviceInfo.deviceToken, userPolicyTerms);
     // console.log(response.data);
     if (response.status === 200) {
-      Alert.alert('회원가입을 완료했습니다!');
       // 로그인 시도 
       const response = await login(phone, deviceInfo.deviceToken)
       try {
-        console.log("로그인 성공", response);
+        console.log("로그인 성공", response.status);
+        console.log("accessToken", response.data.accessToken);
+        console.log('refreshToken', response.data.refreshToken);
         await AsyncStorage.setItem('accessToken', response.data.accessToken);
         await AsyncStorage.setItem('refreshToken', response.data.refreshToken);
-        navigation.navigate('LocationSetting')
+        navigation.navigate('LocationSetting', { registSucess: true })
       } catch (err) {
         console.log(err);
       }
@@ -55,20 +59,28 @@ const SignUpName = ({ navigation, route }: SignUpName) => {
 
   }
 
+  const openModal = () => {
+    setModalOpen(true);
+  }
+
+  const closeModal = () => {
+    setModalOpen(false);
+  }
+
   // 닉네임 중복 체크
   const CheckNickName = async () => {
     const response = await checkname(nickname);
-    console.log(response.data);
+    console.log("닉네임 중복확인 결과: ", response.data);
     if (response.data == true) {
-      Alert.alert('다른 닉네임을 사용하시기 바랍니다.');
+      setNameValid(false);
     } else {
-      Alert.alert('사용가능합니다.');
+      setNameValid(true);
+      openModal();
     }
   }
   const InputNickName = (name: string) => {
     setNickname(name);
   }
-
 
   return (
     <View style={PhoneWrapper.MainContainer}>
@@ -83,13 +95,18 @@ const SignUpName = ({ navigation, route }: SignUpName) => {
       </View>
 
       <View style={PhoneWrapper.CodeContainer}>
-        <TextInput
-          style={PhoneWrapper.authCode}
-          // accessible={isCheck}
-          keyboardType={"name-phone-pad"}
-          onChangeText={value => InputNickName(value)}
-          placeholder="닉네임을 입력해주세요.">
-        </TextInput>
+        <View style={PhoneWrapper.NameContainer}>
+          <TextInput
+            style={PhoneWrapper.authCode}
+            // accessible={isCheck}
+            keyboardType={"name-phone-pad"}
+            onChangeText={value => InputNickName(value)}
+            placeholder="닉네임을 입력해주세요.">
+          </TextInput>
+          {!nameValid && <Text style={{ color: 'red' }}>
+            중복된 닉네임입니다.
+          </Text>}
+        </View>
         <TouchableOpacity
           style={PhoneWrapper.ConfirmView}
           onPress={CheckNickName}>
@@ -103,6 +120,13 @@ const SignUpName = ({ navigation, route }: SignUpName) => {
           <Text style={PhoneWrapper.ConfirmText}>회원가입</Text>
         </TouchableOpacity>
       </View>
+
+      <BottomPopup
+        open={modalOpen}
+        close={closeModal}
+        header={"사용 가능합니다!"}
+        onTouchOutSide={closeModal}
+      />
     </View>
   )
 }
@@ -144,8 +168,11 @@ const PhoneWrapper = StyleSheet.create({
     marginTop: 50,
     flexDirection: 'row',
   },
+  NameContainer: {
+    flexDirection: 'column',
+  },
   authCode: {
-    width: 180,
+    width: 165,
     height: 50,
     fontSize: 15,
     borderColor: 'lightgray',
@@ -154,7 +181,7 @@ const PhoneWrapper = StyleSheet.create({
   },
   ConfirmView: {
     backgroundColor: '#00C1DE',
-    marginLeft: 20,
+    marginLeft: 15,
     borderRadius: 8,
     width: 120,
     height: 50,
@@ -165,6 +192,7 @@ const PhoneWrapper = StyleSheet.create({
     display: 'flex',
     flex: 5,
     alignItems: 'center',
+    marginTop: 30,
   },
   Register: {
     backgroundColor: '#00C1DE',

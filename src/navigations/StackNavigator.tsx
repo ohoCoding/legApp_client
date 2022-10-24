@@ -15,9 +15,11 @@ import SignUpVerify from '../components/SignUp/SignUpVerify';
 import SignUpName from '../components/SignUp/SignUpName';
 import CheckName from '../components/Check/CheckName';
 import LocationSetting from '../components/Location/LocationSetting';
+import LocationSearch from '../components/Location/LocationSearch';
 import LocationVerify from '../components/Location/LocationVerify';
 import SignInPhone from '../components/SignIn/SignInPhone';
 import SignInVerify from '../components/SignIn/SignInVerify';
+import MainPage from '../pages/MainPage';
 
 
 const Stack = createNativeStackNavigator();
@@ -27,7 +29,14 @@ const StackNavigator = () => {
 
   return (
 
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName='Home'>
+      {/* <Stack.Screen
+        name="MainPage"
+        component={MainPage}
+        options={{
+          headerShown: false,
+        }}
+      /> */}
       <Stack.Screen
         name="Home"
         component={Home}
@@ -47,14 +56,14 @@ const StackNavigator = () => {
         }} />
       <Stack.Screen name="SignInVerify"
         component={SignInVerify}
-      // options={{
-      //   title: '휴대폰 인증',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //     fontSize: 20,
-      //     fontWeight: 'bold',
-      //   }
-      // }} 
+        options={{
+          title: '휴대폰 인증',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontSize: 20,
+            fontWeight: 'bold',
+          }
+        }}
       />
       {/* <Stack.Screen
         name="SignUp"
@@ -140,6 +149,19 @@ const StackNavigator = () => {
         // options={{ headerShown: false }}
         options={{
           title: '주소 설정',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontSize: 20,
+            fontWeight: 'bold',
+          }
+        }}
+      />
+      <Stack.Screen
+        name="LocationSearch"
+        component={LocationSearch}
+        // options={{ headerShown: false }}
+        options={{
+          title: '주소 검색',
           headerTitleAlign: 'center',
           headerTitleStyle: {
             fontSize: 20,

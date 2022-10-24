@@ -41,9 +41,16 @@ const LocationVerify = ({ navigation, route }: LocationVerify) => {
 
   useEffect(() => {
     console.log("주소 확인", route.params?.location);
+    console.log("위치 확인", route.params?.gps);
+
   }, [])
 
-  const setAlias = (key: string) => {
+  const setAlias = (key: string, e: any) => {
+    console.log(e.currentTarget.value);
+
+    console.log("key: ", key);
+    console.log("address.type: ", address.type);
+
     if (key === 'home' && address.type == '지번명') {
       setHomeAlias(true);
       setData({
@@ -87,7 +94,7 @@ const LocationVerify = ({ navigation, route }: LocationVerify) => {
         isMarked: true,
         address: {
           regionAddress: address.location.address.address_name,
-          roadAddress: address.location.road_address.address_name,
+          roadAddress: address.location.address.address_name,
           locationName: address.location.address.address_name,
           depth1: address.location.address.region_1depth_name,
           depth2: address.location.address.region_2depth_name,
@@ -132,6 +139,7 @@ const LocationVerify = ({ navigation, route }: LocationVerify) => {
     console.log(response.data);
     try {
       Alert.alert("위치 저장 성공")
+      navigation.navigate('MainPage');
     } catch (err) {
       console.log(err);
     }
@@ -154,9 +162,9 @@ const LocationVerify = ({ navigation, route }: LocationVerify) => {
             borderColor: 'black',
             borderWidth: 1,
             marginRight: 50
-          }} onPress={e => setAlias('home')}>
+          }} onPress={e => setAlias('home', e)}>
             <Icon name='greenhouse' size={30} color="black" />
-            <Text style={LocationVerifyWrapper.alias}> 우리집</Text>
+            <Text style={LocationVerifyWrapper.alias}>우리집</Text>
           </TouchableOpacity>
           <TouchableOpacity style={{
             backgroundColor: companyAlias === true ? '#87CEEB' : 'white',
@@ -167,14 +175,14 @@ const LocationVerify = ({ navigation, route }: LocationVerify) => {
             borderRadius: 10,
             borderColor: 'black',
             borderWidth: 1,
-          }} onPress={e => setAlias('company')}>
+          }} onPress={e => setAlias('company', e)}>
             <Icon name='office-building-outline' size={30} color="black" />
-            <Text style={LocationVerifyWrapper.alias}> 회사 </Text>
+            <Text style={LocationVerifyWrapper.alias}>회사</Text>
           </TouchableOpacity>
         </View>
         <View style={LocationVerifyWrapper.buttonView}>
           <TouchableOpacity style={LocationVerifyWrapper.button} onPress={saveLocation}>
-            <Text style={LocationVerifyWrapper.title} > 위치설정 하기</Text>
+            <Text style={LocationVerifyWrapper.title} > 위치 설정 완료</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -257,9 +265,9 @@ const LocationVerifyWrapper = StyleSheet.create({
     bottom: 100
   },
   button: {
-    width: 300,
-    height: 50,
-    backgroundColor: '#3E3E3E',
+    width: 325,
+    height: 55,
+    backgroundColor: '#00C1DE',
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center"

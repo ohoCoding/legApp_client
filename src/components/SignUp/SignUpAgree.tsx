@@ -11,21 +11,58 @@ type SignUpAgree = {
 }
 
 const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
-  const [checkList, setCheckList] = useState<boolean[]>([]);
-  const [allCheckBox, setAllCheckBox] = useState(false);
-  const [infoCheckBox, setInfoCheckBox] = useState(false);
-  const [eventCheckBox, setEventCheckBox] = useState(false);
-  const checkAll = (e: ChangeEvent<HTMLInputElement>) => {
-    // e.target.lib ? setCheckList([allCheckBox, infoCheckBox, eventCheckBox]) : setCheckList([]);
-  }
-  const check = (e: ChangeEvent<HTMLInputElement>) => {
-    // e.target ? setCheckList([...checkList, e.target]) : setCheckList(checkList.filter((choice) => choice !== e.target));
-  }
-  const [userPolicyTerms, setUserPolicTerms] = useState<Agree>({
+  const [checkList, setCheckList] = useState<string[]>([]);
+  const [isAllChecked, setIsAllChecked] = useState(false);
+  // const [infoCheckBox, setInfoCheckBox] = useState(false);
+  // const [eventCheckBox, setEventCheckBox] = useState(false);
+  const [userPolicyTerms, setUserPolicyTerms] = useState<Agree>({
     agreePolicy1: false,
     agreePolicy2: false,
     agreePolicy3: false
   });
+
+  // const checkAll = (e: ChangeEvent<HTMLInputElement>) => {
+  //   // e.target.lib ? setCheckList([isAllChecked, infoCheckBox, eventCheckBox]) : setCheckList([]);
+  // }
+
+  const setInfoCheckBox = (checked: any) => {
+    console.log("info check", checked);
+    setUserPolicyTerms({ ...userPolicyTerms, agreePolicy1: checked })
+    // e.target
+    //   ? setCheckList([...checkList, e.target.nativeID]) : setCheckList(checkList.filter((choice) => choice !== e.target));
+  }
+
+  const setEventCheckBox = (checked: any) => {
+    console.log("event check", checked);
+    if (checked) {
+      setUserPolicyTerms({ ...userPolicyTerms, agreePolicy2: checked })
+    } else {
+      setUserPolicyTerms({ ...userPolicyTerms, agreePolicy2: checked })
+      setUserPolicyTerms({
+        agreePolicy1: false,
+        agreePolicy2: false,
+        agreePolicy3: false
+      })
+      setIsAllChecked(false);
+    }
+  }
+
+  const setLocationCheckBox = (checked: any) => {
+    console.log("location check", checked);
+
+    if (checked) {
+      setUserPolicyTerms({ ...userPolicyTerms, agreePolicy3: checked })
+    } else {
+      setUserPolicyTerms({ ...userPolicyTerms, agreePolicy3: checked })
+      setUserPolicyTerms({
+        agreePolicy1: false,
+        agreePolicy2: false,
+        agreePolicy3: false
+      })
+      setIsAllChecked(false);
+    }
+  }
+
 
   const settingUserPolicyInfo = useCallback(() => {
     // try {
@@ -35,7 +72,7 @@ const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
     //     'Unable to get device token.Either simulator or not iOS11 + ',
     //   );
     // }
-    setUserPolicTerms({
+    setUserPolicyTerms({
       agreePolicy1: true,
       agreePolicy2: true,
       agreePolicy3: true
@@ -44,13 +81,39 @@ const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
 
   useEffect(() => {
     console.log("동의 Token:", route.params?.deviceInfo);
-    settingUserPolicyInfo()
-  }, [])
+    console.log("동의 항목", userPolicyTerms);
+
+  }, [userPolicyTerms])
 
   const goSignUpPhone = () => {
     navigation.navigate('SignUpPhone', { deviceInfo: route.params?.deviceInfo, userPolicyTerms: userPolicyTerms })
   }
 
+  const allAgreeHnalder = (checked: any) => {
+    // setIsAllChecked(!isAllChecked)
+    // e.target ?
+    //   setCheckList(['event', 'location']) : setCheckList([]);
+    console.log(checked);
+
+    if (checked) {
+      settingUserPolicyInfo()
+      setIsAllChecked(true);
+    } else if (!checked) {
+      setUserPolicyTerms({
+        agreePolicy1: false,
+        agreePolicy2: false,
+        agreePolicy3: false
+      })
+      setIsAllChecked(false);
+    }
+  }
+  const setAgreeHandler = (key: string, e: ChangeEvent<HTMLInputElement>) => {
+    console.log(key);
+    // console.log(e.target.lib);
+
+
+
+  }
   return (
     <View style={AgreeWrapper.MainContainer}>
       <Header />
@@ -63,28 +126,40 @@ const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
             nativeID="all"
             style={AgreeWrapper.checkBox}
             disabled={false}
-            onValueChange={setAllCheckBox}
-            value={allCheckBox}
-            onChange={checkAll} />
+            onValueChange={allAgreeHnalder}
+            value={isAllChecked}
+          // onChange={allAgreeHnalder} 
+          />
           <Text style={AgreeWrapper.checkText}> 전체 동의</Text>
         </View>
         <View style={AgreeWrapper.AgreeBox}>
           <CheckBox
+            nativeID="event"
             style={AgreeWrapper.checkBox}
             disabled={false}
-            onValueChange={setInfoCheckBox}
-            value={infoCheckBox}
-            onChange={check} />
+            onValueChange={(e) => setInfoCheckBox(e)}
+            value={userPolicyTerms.agreePolicy1}
+            onChange={(e) => setAgreeHandler('info', e)} />
           <Text style={AgreeWrapper.checkText}> [필수] 개인정보 수집 및 이용 동의</Text>
+        </View>
+        <View style={AgreeWrapper.AgreeBox}>
+          <CheckBox
+            nativeID="location"
+            style={AgreeWrapper.checkBox}
+            disabled={false}
+            onValueChange={(e) => setEventCheckBox(e)}
+            value={userPolicyTerms.agreePolicy2}
+            onChange={(e) => setAgreeHandler('event', e)} />
+          <Text style={AgreeWrapper.checkText}> [선택] 이벤트 정보 수신 동의</Text>
         </View>
         <View style={AgreeWrapper.AgreeBox}>
           <CheckBox
             style={AgreeWrapper.checkBox}
             disabled={false}
-            onValueChange={setEventCheckBox}
-            value={eventCheckBox}
-            onChange={check} />
-          <Text style={AgreeWrapper.checkText}> [선택] 이벤트 정보 수신 동의</Text>
+            onValueChange={(e) => setLocationCheckBox(e)}
+            value={userPolicyTerms.agreePolicy3}
+            onChange={(e) => setAgreeHandler('location', e)} />
+          <Text style={AgreeWrapper.checkText}> [선택] 위치 정보 수신 동의</Text>
         </View>
         <TouchableOpacity style={AgreeWrapper.button}>
           <Text style={AgreeWrapper.verify} onPress={goSignUpPhone}>인증하기</Text>

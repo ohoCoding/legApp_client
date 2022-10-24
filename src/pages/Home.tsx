@@ -21,37 +21,73 @@ const Home = ({ navigation }: HomeProps) => {
         latitude: 0,
         longitude: 0
     });
-
-    // 토큰 설정
-    useEffect(() => {
-        async function getToken() {
-            try {
-                //ios 알림 권한 요청
-                const authStatus = await messaging().requestPermission();
-                const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-                if (enabled) {
-                    const token = await messaging().getToken();
-                    //푸시 토큰 표시 
-                    console.log('Home Device Token 1st', token);
-                    setToken(token);
-                    console.log('Authorization status:', authStatus);
-                } else {
-                    console.log('fcm auth fail');
-                }
-                //원격 알림에 등록했는지 여부
-                if (!messaging().isDeviceRegisteredForRemoteMessages) {
-                    await messaging().registerDeviceForRemoteMessages();
-                }
+    const getToken = async () => {
+        try {
+            //ios 알림 권한 요청
+            const authStatus = await messaging().requestPermission();
+            const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+            if (enabled) {
                 const token = await messaging().getToken();
                 //푸시 토큰 표시 
-                console.log('Home Device Token 2nd', token);
+                console.log('Home Device Token 1st', token);
                 setToken(token);
-
-            } catch (error) {
-                console.error(error);
+                console.log('Authorization status:', authStatus);
+            } else {
+                console.log('fcm auth fail');
             }
+            //원격 알림에 등록했는지 여부
+            // if (!messaging().isDeviceRegisteredForRemoteMessages) {
+            //     await messaging().registerDeviceForRemoteMessages();
+            // }
+            // const token = await messaging().getToken();
+            // //푸시 토큰 표시 
+            // console.log('Home Device Token 2nd', token);
+            // setToken(token);
+
+        } catch (error) {
+            console.error("에러", error);
         }
-        getToken();
+    }
+    // 토큰 설정    
+    useEffect(() => {
+        // async function getToken() {
+        //     try {
+        //         //ios 알림 권한 요청
+        //         const authStatus = await messaging().requestPermission();
+        //         console.log(authStatus);
+
+        //         const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+        //         console.log(enabled);
+
+        //         if (enabled) {
+        //             const token = await messaging().getToken();
+        //             //푸시 토큰 표시 
+        //             console.log('Home Device Token 1st', token);
+        //             setToken(token);
+        //             console.log('Authorization status:', authStatus);
+        //         } else {
+        //             console.log('fcm auth fail');
+        //         }
+        //         //원격 알림에 등록했는지 여부
+        //         // if (!messaging().isDeviceRegisteredForRemoteMessages) {
+        //         //     await messaging().registerDeviceForRemoteMessages();
+        //         // }
+        //         // const token = await messaging().getToken();
+        //         // //푸시 토큰 표시 
+        //         // console.log('Home Device Token 2nd', token);
+        //         // setToken(token);
+
+        //     } catch (error) {
+        //         console.error("에러", error);
+        //     }
+        // }
+        try {
+            setTimeout(() => {
+                getToken();
+            }, 5000)
+        } catch (e: any) {
+            console.log(e.message);
+        }
     }, []);
 
     // 현재 위치 사용 권한 설정
@@ -120,7 +156,7 @@ const Home = ({ navigation }: HomeProps) => {
             </View>
             <View style={homeWrapper.confirmContainer}>
                 <Text style={homeWrapper.login}>이미 계정이 있나요?</Text>
-                <Text style={homeWrapper.login} onPress={() => navigation.navigate('SignInPhone')}>로그인</Text>
+                <Text style={homeWrapper.login} onPress={() => navigation.navigate('SignInPhone', { deviceInfo: token })}>로그인</Text>
             </View>
         </>
 

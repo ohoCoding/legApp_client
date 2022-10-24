@@ -165,3 +165,59 @@ export const location = async (data: PostLocation, accessToken: string) => {
     throw err;
   }
 }
+
+
+//내 위치설정
+export const mylocation = async (accessToken: string) => {
+  console.log(accessToken);
+
+  try {
+    const result = await axios({
+      method: 'get',
+      url: hosturi + '/users/locations',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    })
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}
+
+export const activeLocation = async (accessToken: string) => {
+  console.log(accessToken);
+
+  try {
+    const result = await axios({
+      method: 'get',
+      url: hosturi + '/users/locations/active',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    })
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}
+
+export const getStoreList = async (accessToken: string) => {
+  console.log(accessToken);
+
+  try {
+    const result = await axios({
+      method: 'get',
+      url: hosturi + '/posts',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    })
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}

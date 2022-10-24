@@ -3,8 +3,9 @@ import { Alert, Button, Image, SafeAreaView, StyleSheet, Text, TextInput, Toucha
 
 type SignInPhone = {
     navigation: any;
+    route?: any;
 }
-const SignInPhone = ({ navigation }: SignInPhone) => {
+const SignInPhone = ({ navigation, route }: SignInPhone) => {
     const [input, setInput] = useState<string>();
     const [buttonReady, setButtonReady] = useState<boolean>(false);
 
@@ -20,7 +21,7 @@ const SignInPhone = ({ navigation }: SignInPhone) => {
         // const response = await authphone(input);
         // console.log(response.data);
         // setAuthCode(response.data.authCode);
-        navigation.navigate('SignInVerify', { phone: input })
+        navigation.navigate('SignInVerify', { phone: input, deviceInfo: route.params?.deviceInfo })
     }
     return (
         <View style={SignInWrapper.Container}>

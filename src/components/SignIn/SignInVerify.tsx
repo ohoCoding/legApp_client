@@ -27,7 +27,7 @@ const SignInVerify = ({ navigation, route }: SignInVerify) => {
 
   // 전달받은 DeviceToken 설정
   const settingDeviceInfo = useCallback(() => {
-    setDeviceInfo(route.params?.deviceInfo)
+    setDeviceInfo({ deviceToken: route.params?.deviceInfo })
   }, []);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const SignInVerify = ({ navigation, route }: SignInVerify) => {
     Verify(route.params.phone);
     // DeviceToken 설정 함수 실행
     settingDeviceInfo()
-  })
+  }, [])
 
   const ConfirmCode = async () => {
     // 입력한 인증번호와 받은 인증번호 일치하면
@@ -53,15 +53,21 @@ const SignInVerify = ({ navigation, route }: SignInVerify) => {
       } else {
 
         try {
+          console.log(route.params?.phone, route.params?.deviceInfo);
+
           // 로그인 시도
-          const response = await login(route.params?.phone, deviceInfo.deviceToken)
-          console.log("login sucess", response);
+          const response = await login(route.params?.phone, route.params?.deviceInfo)
+          console.log("로그인 성공", response.status);
+          console.log("accessToken", response.data.accessToken);
+          console.log('refreshToken', response.data.refreshToken);
           if (response.status === 200)
             await AsyncStorage.setItem('accessToken', response.data.accessToken);
           await AsyncStorage.setItem('refreshToken', response.data.refreshToken);
-          navigation.navigate('LocationSetting')
-        } catch {
-          setModalVisible(true)
+          navigation.navigate('MainPage')
+        } catch (err) {
+          console.log(err);
+
+          // setModalVisible(true)
         }
       }
       // navigation.navigate('SignUpAgree', { phone: input });
